@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import ThemeToggle from "@/components/ThemeToggle";
+import Navbar from "@/components/shared/Navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,9 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} transition-colors duration-300`}>
 
-        <ThemeProvider>{children}
-
-          <ThemeToggle></ThemeToggle>
+        <ThemeProvider>
+          <Navbar />
+          {children}
+          {/* <ThemeToggle></ThemeToggle> */}
         </ThemeProvider>
       </body>
     </html>
