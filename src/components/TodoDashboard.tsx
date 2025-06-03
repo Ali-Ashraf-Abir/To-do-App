@@ -21,7 +21,7 @@ export default function TodoDashboard() {
     const [todos, setTodos] = useState<Todo[]>([]);
     const [form, setForm] = useState({ title: "", description: "", date: "" });
     const [filter, setFilter] = useState("");
-
+    console.log("Todos:", todos);
     const addTodo = () => {
         if (!form.title || !form.date) return;
         const newTodo: Todo = {

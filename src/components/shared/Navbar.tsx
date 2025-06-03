@@ -30,6 +30,12 @@ export default function Navbar() {
          <Link href="/" className="text-gray-700 dark:text-gray-300 hover:underline">
           Home
         </Link>
+         <Link href="/todo" className="text-gray-700 dark:text-gray-300 hover:underline">
+          Todo
+        </Link>
+         <Link href="/planner" className="text-gray-700 dark:text-gray-300 hover:underline">
+          Planner
+        </Link>
         <Link href="/login" className="text-gray-700 dark:text-gray-300 hover:underline">
           Login
         </Link>

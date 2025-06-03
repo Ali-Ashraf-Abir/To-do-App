@@ -4,22 +4,45 @@ import { useState } from "react";
 import Input from "./Input";
 import Link from "next/link";
 import { Lock, User } from "lucide-react"; // ✅ Lucide icons
-
+import apiRequest from '../utilities/apiCalls'
+import { useRouter } from "next/navigation";
 interface AuthFormProps {
   type: "login" | "register";
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const [form, setForm] = useState({ email: "", password: "" });
-
+  const router = useRouter();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", form);
+
+    try {
+      const data = await apiRequest(`/auth/${type}`, 'POST', form);
+      console.log('Response from server:', data);
+
+      if (data.token) {
+        alert(`${type == 'login' ? 'login successful' : 'Registered Succesfully'}`)
+        document.cookie = `token=${data.token}; path=/; max-age=86400; secure; samesite=strict`;
+        router.push('/todo');
+
+      } else {
+        console.error('Unexpected response:', data);
+        alert(data.error || 'Unknown response');
+      }
+    } catch (err: any) {
+      console.log(err);
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert('An unknown error occurred during authentication.');
+      }
+    }
   };
+
 
   return (
     <form
@@ -38,7 +61,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
       <Input
         label="Email"
         name="email"
-        
+
         type="email"
         value={form.email}
         onChange={handleChange}
@@ -48,7 +71,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
         label="Password"
         name="password"
         type="password"
-        
+
         value={form.password}
         onChange={handleChange}
         required
