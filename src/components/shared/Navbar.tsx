@@ -1,13 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon, LogOutIcon } from "lucide-react";
+import getCookie from "@/utilities/getCookie";
+import apiRequest from "@/utilities/apiCalls";
+import { useAuth } from "@/context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
-
+  const { token, setToken, user, setUser,loggedIn } = useAuth();
+  const router= useRouter()
   useEffect(() => {
     const saved = localStorage.getItem("theme") as "light" | "dark";
     setTheme(saved ?? "light");
@@ -20,6 +26,27 @@ export default function Navbar() {
 
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
+  useEffect(() => {
+    const token = getCookie("token")
+    setToken(token || '')
+
+    if (token) {
+      setUser(jwtDecode(token))
+    }
+  }, [loggedIn])
+
+  const handleLogout = () => {
+    apiRequest('/auth/logout', 'POST', {})
+      .then((data) => {
+        if (data.status = 'success') {
+          document.cookie = "token=; path=/; max-age=0; secure; samesite=strict";
+          setToken('');
+          router.push('/')
+        }
+      }
+      )
+  }
+
   return (
     <nav className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-800 border-b dark:border-gray-700 fixed top-0 left-0 right-0 z-50">
       <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white">
@@ -27,21 +54,33 @@ export default function Navbar() {
       </Link>
 
       <div className="hidden md:flex items-center space-x-6">
-         <Link href="/" className="text-gray-700 dark:text-gray-300 hover:underline">
+        <Link href="/" className="text-gray-700 dark:text-gray-300 hover:underline">
           Home
         </Link>
-         <Link href="/todo" className="text-gray-700 dark:text-gray-300 hover:underline">
-          Todo
-        </Link>
-         <Link href="/planner" className="text-gray-700 dark:text-gray-300 hover:underline">
-          Planner
-        </Link>
-        <Link href="/login" className="text-gray-700 dark:text-gray-300 hover:underline">
-          Login
-        </Link>
-        <Link href="/register" className="text-gray-700 dark:text-gray-300 hover:underline">
-          Register
-        </Link>
+        {
+          token &&
+          <div className="hidden md:flex items-center space-x-6">
+            <Link href="/todo" className="text-gray-700 dark:text-gray-300 hover:underline">
+              Todo
+            </Link>
+            <Link href="/planner" className="text-gray-700 dark:text-gray-300 hover:underline">
+              Planner
+            </Link>
+          </div>
+        }
+        {
+          !token && <div className="hidden md:flex items-center space-x-6">
+            <Link href="/login" className="text-gray-700 dark:text-gray-300 hover:underline">
+              Login
+            </Link>
+            <Link href="/register" className="text-gray-700 dark:text-gray-300 hover:underline">
+              Register
+            </Link>
+          </div>
+        }
+        {
+          token && <button onClick={() => handleLogout()} className="py-2 text-gray-700 dark:text-gray-300"><LogOutIcon></LogOutIcon></button>
+        }
         <button onClick={toggleTheme} className="text-gray-700 dark:text-gray-300">
           {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
         </button>
@@ -56,12 +95,30 @@ export default function Navbar() {
 
       {mobileOpen && (
         <div className="absolute top-16 left-0 right-0 flex flex-col items-center bg-white dark:bg-gray-900 py-4 shadow-md md:hidden z-10">
-          <Link href="/login" className="py-2 text-gray-700 dark:text-gray-300">
-            Login
-          </Link>
-          <Link href="/register" className="py-2 text-gray-700 dark:text-gray-300">
-            Register
-          </Link>
+          {
+            token &&
+            <div className=" flex flex-col items-center">
+              <Link href="/todo" className="text-gray-700 dark:text-gray-300 py-2 hover:underline">
+                Todo
+              </Link>
+              <Link href="/planner" className="text-gray-700 dark:text-gray-300 py-2 hover:underline">
+                Planner
+              </Link>
+            </div>
+          }
+          {
+            !token && <div className="  flex flex-col items-center">
+              <Link href="/login" className="text-gray-700 dark:text-gray-300 py-2 hover:underline">
+                Login
+              </Link>
+              <Link href="/register" className="text-gray-700 dark:text-gray-300 py-2 hover:underline">
+                Register
+              </Link>
+            </div>
+          }
+          {
+            token && <button onClick={handleLogout} className="py-2 text-gray-700 dark:text-gray-300">Logout</button>
+          }
           <button onClick={toggleTheme} className="py-2 text-gray-700 dark:text-gray-300">
             {theme === "dark" ? "Light Mode" : "Dark Mode"}
           </button>
