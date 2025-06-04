@@ -17,42 +17,52 @@ type Todo = {
     title: string;
     description: string;
     date: string;
-    sort_order:number;
+    sort_order: number;
+    completed: boolean;
 };
 
 export default function TodoDashboard() {
     const { user } = useAuth();
-    const [reload, setReload] = useState(false)
+    const [reload, setReload] = useState(false);
     const [todos, setTodos] = useState<Todo[]>([]);
     const [form, setForm] = useState({ title: "", description: "", date: "" });
     const [filter, setFilter] = useState("");
-    console.log(todos)
+
     const addTodo = () => {
         if (!form.title || !form.date) return;
         const newTodo: Todo = {
             ...form,
             id: crypto.randomUUID(),
             sort_order: todos.length,
+            completed: false,
         };
-        apiRequest(`/todos/${user && user?.id}`, "POST", newTodo)
-            .then(data => {
-                if (data.status === 'success') {
+        apiRequest(`/todos/${user?.id}`, "POST", newTodo)
+            .then((data) => {
+                if (data.status === "success") {
                     alert("Todo added successfully");
-                }
-                else {
+                    setReload(true);
+                } else {
                     alert("Failed to add todo: " + data.error);
                 }
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error("Error adding todo:", err);
                 alert("An error occurred while adding the todo.");
-            })
+            });
+
         setForm({ title: "", description: "", date: "" });
-        setReload(true)
     };
 
     const removeTodo = (id: string) => {
-        setTodos((prev) => prev.filter((todo) => todo.id !== id));
+        apiRequest(`/todos/${user?.id}/${id}`, "DELETE")
+            .then((res) => {
+                if (res.status === "success") {
+                    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+                } else {
+                    alert("Failed to delete");
+                }
+            })
+            .catch(console.error);
     };
 
     const filteredTodos = todos.filter((todo) =>
@@ -75,133 +85,235 @@ export default function TodoDashboard() {
         }));
 
         apiRequest(`/todos/${user?.id}/reorder`, "PUT", payload)
-            .then(res => {
+            .then((res) => {
                 if (res.status !== "success") {
                     alert("Failed to save new order");
                 }
             })
-            .catch(err => {
-                console.error("Error saving sort order:", err);
-            });
+            .catch(console.error);
     };
 
     useEffect(() => {
-        apiRequest(`/todos/${user && user?.id}`, "GET")
-            .then(data => {
-                console.log(data);
-                setTodos(data.todos || [])
+        if (!user) return;
+        apiRequest(`/todos/${user.id}`, "GET")
+            .then((data) => {
+                setTodos(data.todos || []);
             })
-            .catch(err => { console.error("Error fetching todos:", err) })
-        setReload(false)
-    }, [user, reload])
+            .catch(console.error);
+
+        setReload(false);
+    }, [user, reload]);
+
     const overdue = todos.filter((t) => dayjs(t.date).isBefore(dayjs(), "day"));
     const upcoming = todos.filter((t) => dayjs(t.date).isAfter(dayjs(), "day"));
 
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-white">
-                <div className="bg-blue-600 p-4 rounded-lg shadow">Total: {todos.length}</div>
-                <div className="bg-red-600 p-4 rounded-lg shadow">Overdue: {overdue.length}</div>
-                <div className="bg-green-600 p-4 rounded-lg shadow">Upcoming: {upcoming.length}</div>
-            </div>
+  <div className="max-w-4xl mx-auto p-6 space-y-6 font-mono bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark">
+    <h2 className="text-2xl font-bold">
+      Retro Task Dashboard
+    </h2>
 
-            {/* Form */}
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Add New Todo</h3>
-                <div className="grid md:grid-cols-3 gap-2">
-                    <input
-                        type="text"
-                        placeholder="Title"
-                        className="p-2 rounded bg-gray-100 dark:bg-gray-700 dark:text-white"
-                        value={form.title}
-                        onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    />
-                    <input
-                        type="date"
-                        className="p-2 rounded bg-gray-100 dark:bg-gray-700 dark:text-white"
-                        value={form.date}
-                        onChange={(e) => setForm({ ...form, date: e.target.value })}
-                    />
-                    <button
-                        onClick={addTodo}
-                        className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="bg-bgSecondaryLight dark:bg-bgSecondaryDark p-4 rounded shadow text-textPrimaryLight dark:text-textPrimaryDark">
+        Total: {todos.length}
+      </div>
+      <div className="bg-bgSecondaryLight dark:bg-bgSecondaryDark p-4 rounded shadow text-textPrimaryLight dark:text-textPrimaryDark">Overdue: {overdue.length}</div>
+      <div className="bg-bgSecondaryLight dark:bg-bgSecondaryDark p-4 rounded shadow text-textPrimaryLight dark:text-textPrimaryDark">Upcoming: {upcoming.length}</div>
+    </div>
+
+    {/* Form */}
+    <div className="bg-cardBgLight dark:bg-cardBgDark p-4 rounded-lg shadow space-y-4 text-textPrimaryLight dark:text-textPrimaryDark">
+      <h3 className="text-lg font-semibold">Add New Todo</h3>
+      <div className="grid md:grid-cols-3 gap-2">
+        <input
+          type="text"
+          placeholder="Title"
+          className="p-2 rounded bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
+        <input
+          type="date"
+          className="p-2 rounded bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark"
+          value={form.date}
+          onChange={(e) => setForm({ ...form, date: e.target.value })}
+        />
+        <button
+          onClick={addTodo}
+          className="flex items-center justify-center bg-btnBgLight dark:bg-btnBgDark hover:bg-btnBgHoverLight dark:hover:bg-btnBgHoverDark text-white p-2 rounded"
+        >
+          <Plus className="mr-1" size={18} /> Add
+        </button>
+      </div>
+      <textarea
+        placeholder="Description"
+        className="w-full p-2 rounded bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark"
+        rows={2}
+        value={form.description}
+        onChange={(e) => setForm({ ...form, description: e.target.value })}
+      />
+    </div>
+
+    {/* Search */}
+    <div className="flex justify-between items-center mt-6">
+      <h3 className="text-lg font-semibold">Your Tasks</h3>
+      <input
+        type="text"
+        placeholder="Search title..."
+        className="p-2 rounded bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark border border-2 border-bgSecondaryLight dark:border-bgSecondaryDark"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+      />
+    </div>
+
+    {/* Task List */}
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="todoList">
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-4">
+            {filteredTodos.map((todo, index) => (
+              <Draggable draggableId={todo.id} index={index} key={todo.id}>
+                {(provided) => {
+                  const [edit, setEdit] = useState(false);
+                  const [editData, setEditData] = useState({
+                    title: todo.title,
+                    description: todo.description,
+                    date: todo.date,
+                  });
+
+                  const handleUpdate = () => {
+                    const updatedTodo = { ...todo, ...editData };
+                    apiRequest(`/todos/${user?.id}/${todo.id}`, "PUT", updatedTodo).then(
+                      (res) => {
+                        if (res.status === "success") {
+                          setTodos((prev) =>
+                            prev.map((t) => (t.id === todo.id ? updatedTodo : t))
+                          );
+                          setEdit(false);
+                        } else {
+                          alert("Failed to update todo");
+                        }
+                      }
+                    );
+                  };
+
+                  const toggleComplete = () => {
+                    apiRequest(`/todos/${user?.id}/${todo.id}/toggle`, "PATCH").then(
+                      (res) => {
+                        if (res.status === "success") {
+                          setTodos((prev) =>
+                            prev.map((t) =>
+                              t.id === todo.id ? { ...t, completed: !t.completed } : t
+                            )
+                          );
+                        } else {
+                          alert("Failed to toggle completion");
+                        }
+                      }
+                    );
+                  };
+
+                  return (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className="bg-cardBgLight dark:bg-cardBgDark p-4 rounded-lg shadow transition"
                     >
-                        <Plus className="mr-1" size={18} /> Add
-                    </button>
-                </div>
-                <textarea
-                    placeholder="Description"
-                    className="w-full p-2 rounded bg-gray-100 dark:bg-gray-700 dark:text-white"
-                    rows={2}
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                />
-            </div>
-
-            {/* Search */}
-            <div className="flex justify-between items-center mt-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Your Tasks</h3>
-                <input
-                    type="text"
-                    placeholder="Search title..."
-                    className="p-2 rounded bg-gray-100 dark:bg-gray-700 dark:text-white"
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                />
-            </div>
-
-            {/* Task List */}
-            <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="todoList">
-                    {(provided: any) => (
-                        <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className="space-y-4"
+                      <div className="flex justify-between items-start gap-2">
+                        {edit ? (
+                          <div className="flex-1 space-y-2">
+                            <input
+                              type="text"
+                              value={editData.title}
+                              onChange={(e) =>
+                                setEditData({ ...editData, title: e.target.value })
+                              }
+                              className="w-full p-1 rounded bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark"
+                            />
+                            <textarea
+                              rows={2}
+                              value={editData.description}
+                              onChange={(e) =>
+                                setEditData({ ...editData, description: e.target.value })
+                              }
+                              className="w-full p-1 rounded bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark"
+                            />
+                            <input
+                              type="date"
+                              value={editData.date}
+                              onChange={(e) =>
+                                setEditData({ ...editData, date: e.target.value })
+                              }
+                              className="w-full p-1 rounded bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark"
+                            />
+                            <div className="flex gap-2">
+                              <button
+                                className="text-green-700 hover:underline"
+                                onClick={handleUpdate}
+                              >
+                                Save
+                              </button>
+                              <button
+                                className="text-gray-500 hover:underline"
+                                onClick={() => setEdit(false)}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex-1">
+                            <h4
+                              className={`font-semibold ${
+                                todo.completed
+                                  ? "line-through text-gray-400"
+                                  : "text-textPrimaryLight dark:text-textPrimaryDark"
+                              }`}
+                            >
+                              {todo.title}
+                            </h4>
+                            <p className="text-sm text-textSecondaryLight dark:text-textSecondaryDark">
+                              {todo.description}
+                            </p>
+                            <p className="text-sm text-textSecondaryLight dark:text-textSecondaryDark mt-1">
+                              Due: {dayjs(todo.date).format("DD MMM YYYY")}
+                            </p>
+                            <div className="mt-2 flex gap-3">
+                              <button
+                                onClick={toggleComplete}
+                                className="text-blue-700 hover:underline"
+                              >
+                                {todo.completed
+                                  ? "Mark as Incomplete"
+                                  : "Mark as Complete"}
+                              </button>
+                              <button
+                                onClick={() => setEdit(true)}
+                                className="text-yellow-700 hover:underline"
+                              >
+                                Edit
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        <button
+                          onClick={() => removeTodo(todo.id)}
+                          className="text-red-600 hover:text-red-800"
                         >
-                            {todos.map((todo, index) => {
-                                const isVisible = todo.title.toLowerCase().includes(filter.toLowerCase());
-                                if (!isVisible) return null;
-
-                                return (
-                                    <Draggable draggableId={todo.id} index={index} key={todo.id}>
-                                        {(provided) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg transition"
-                                            >
-                                                <div className="flex justify-between items-center">
-                                                    <div>
-                                                        <h4 className="font-semibold text-gray-800 dark:text-white">
-                                                            {todo.title}
-                                                        </h4>
-                                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                            {todo.description}
-                                                        </p>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                            Due: {dayjs(todo.date).format("DD MMM YYYY")}
-                                                        </p>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => removeTodo(todo.id)}
-                                                        className="text-red-500 hover:text-red-700"
-                                                    >
-                                                        <Trash size={18} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                );
-                            })}
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
-        </div>
-    );
+                          <Trash size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
+  </div>
+);
 }

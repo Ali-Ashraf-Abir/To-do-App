@@ -7,7 +7,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const Input: React.FC<InputProps> = ({ label, name, ...props }) => (
   <div className="mb-5">
-    <label htmlFor={name} className="block mb-1 text-sm font-semibold dark:text-gray-300 text-black">
+    <label
+      htmlFor={name}
+      className="block mb-1 text-sm font-semibold text-textPrimaryLight dark:text-textPrimaryDark"
+    >
       {label}
     </label>
     <input
@@ -15,7 +18,7 @@ const Input: React.FC<InputProps> = ({ label, name, ...props }) => (
       name={name}
       placeholder={`Enter your ${label.toLowerCase()}`}
       {...props}
-      className="w-full px-4 py-2 dark:bg-gray-800 bg-white border border-gray-600 rounded-lg dark:text-gray-100 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      className="w-full px-4 py-2 bg-bgSecondaryLight dark:bg-bgSecondaryDark border border-bgPrimaryDark dark:border-textSecondaryDark text-textPrimaryLight dark:text-textPrimaryDark rounded-lg focus:outline-none focus:ring-2 focus:ring-btnBgLight dark:focus:ring-btnBgDark transition"
     />
   </div>
 );

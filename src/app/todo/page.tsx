@@ -3,8 +3,7 @@ import TodoDashboard from "@/components/TodoDashboard";
 
 export default function DashboardPage() {
   return (
-    <main className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
-
+    <main className="min-h-screen bg-bgPrimaryLight dark:bg-bgPrimaryDark transition-colors">
       <TodoDashboard />
     </main>
   );

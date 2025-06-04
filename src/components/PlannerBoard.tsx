@@ -129,102 +129,96 @@ export default function PlannerBoard() {
   console.log("New note content:", newNoteContent);
   console.log("Active column:", activeColumn);
 
-  return (
-    <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <h1 className="text-3xl font-bold mb-6 text-center">Planner Board</h1>
+return (
+  <div className="min-h-screen p-6 font-mono bg-bgPrimaryLight text-textPrimaryLight dark:bg-bgPrimaryDark dark:text-textPrimaryDark">
+    <h1 className="text-3xl font-bold mb-6 text-center">Planner Board</h1>
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex flex-col md:flex-row gap-4 md:gap-6 max-w-7xl mx-auto">
-          {Object.entries(columns).map(([colId, column]) => (
-            <div
-              key={colId}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col flex-grow min-w-[250px]"
-            >
-              <h2 className="text-xl font-semibold mb-4">{column.title}</h2>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6 max-w-7xl mx-auto">
+        {Object.entries(columns).map(([colId, column]) => (
+          <div
+            key={colId}
+            className="rounded-lg shadow p-4 flex flex-col flex-grow min-w-[250px] bg-cardBgLight text-textSecondaryLight dark:bg-cardBgDark dark:text-textSecondaryDark"
+          >
+            <h2 className="text-xl font-semibold mb-4">{column.title}</h2>
 
-              {/* Notes list */}
-              <Droppable droppableId={colId}>
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className="flex flex-col gap-3 min-h-[150px] flex-grow"
-                  >
-                    {column.notes.map((note, index) => (
-                      <Draggable
-                        key={note.id}
-                        draggableId={note.id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`p-3 rounded-lg shadow cursor-move bg-yellow-100 dark:bg-purple-400 transition ${
-                              snapshot.isDragging
-                                ? "bg-yellow-300 dark:bg-purple-400 shadow-lg"
-                                : ""
-                            }`}
-                          >
-                            <div className="flex justify-between items-start">
-                              <p className="whitespace-pre-wrap">{note.content}</p>
-                              <button
-                                onClick={() => removeNote(colId, note.id)}
-                                className="text-red-600 dark:text-red-800 hover:text-red-800 dark:hover:text-red-600"
-                                aria-label="Delete note"
-                              >
-                                <Trash size={18} />
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-
-              {/* Add new note input */}
-              {activeColumn === colId ? (
-                <div className="mt-4 flex gap-2">
-                  <textarea
-                    className="flex-grow p-2 rounded bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    rows={3}
-                    value={newNoteContent}
-                    onChange={(e) => setNewNoteContent(e.target.value)}
-                    placeholder="Enter note..."
-                    autoFocus
-                  />
-                  <button
-                    onClick={() => addNote(colId)}
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 rounded"
-                  >
-                    Add
-                  </button>
-                  <button
-                    onClick={() => {
-                      setActiveColumn(null);
-                      setNewNoteContent("");
-                    }}
-                    className="bg-gray-300 dark:bg-gray-600 px-3 rounded"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setActiveColumn(colId)}
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded flex items-center justify-center gap-1"
+            <Droppable droppableId={colId}>
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className="flex flex-col gap-3 min-h-[150px] flex-grow"
                 >
-                  <Plus size={16} /> Add Note
-                </button>
+                  {column.notes.map((note, index) => (
+                    <Draggable key={note.id} draggableId={note.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`p-3 rounded-lg shadow cursor-move transition ${
+                            snapshot.isDragging
+                              ? "bg-bgSecondaryLight dark:bg-bgSecondaryDark"
+                              : "bg-bgSecondaryLight dark:bg-btnBgHoverDark"
+                          } text-textPrimaryLight dark:text-textPrimaryDark`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <p className="whitespace-pre-wrap">{note.content}</p>
+                            <button
+                              onClick={() => removeNote(colId, note.id)}
+                              aria-label="Delete note"
+                              className="hover:opacity-80 text-btnBgLight dark:text-btnBgDark"
+                            >
+                              <Trash size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
               )}
-            </div>
-          ))}
-        </div>
-      </DragDropContext>
-    </div>
-  );
+            </Droppable>
+
+            {activeColumn === colId ? (
+              <div className="mt-4 flex gap-2">
+                <textarea
+                  rows={3}
+                  value={newNoteContent}
+                  onChange={(e) => setNewNoteContent(e.target.value)}
+                  placeholder="Enter note..."
+                  autoFocus
+                  className="flex-grow p-2 rounded border border-btnBgLight dark:border-btnBgDark bg-bgSecondaryLight dark:bg-bgSecondaryDark text-textPrimaryLight dark:text-textPrimaryDark"
+                />
+                <button
+                  onClick={() => addNote(colId)}
+                  className="text-white px-4 rounded bg-btnBgLight hover:bg-btnBgHoverLight dark:bg-btnBgDark dark:hover:bg-btnBgHoverDark"
+                >
+                  Add
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveColumn(null);
+                    setNewNoteContent("");
+                  }}
+                  className="px-3 rounded bg-bgSecondaryLight dark:bg-bgSecondaryDark text-textPrimaryLight dark:text-textPrimaryDark"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setActiveColumn(colId)}
+                className="mt-4 text-white px-3 py-1 rounded flex items-center justify-center gap-1 bg-btnBgLight hover:bg-btnBgHoverLight dark:bg-btnBgDark dark:hover:bg-btnBgHoverDark"
+              >
+                <Plus size={16} /> Add Note
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    </DragDropContext>
+  </div>
+);
 }
