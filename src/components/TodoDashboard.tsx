@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     DragDropContext,
     Droppable,
@@ -9,27 +9,46 @@ import {
 } from "@hello-pangea/dnd";
 import dayjs from "dayjs";
 import { Plus, Trash } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import apiRequest from "@/utilities/apiCalls";
 
 type Todo = {
     id: string;
     title: string;
     description: string;
     date: string;
+    sort_order:number;
 };
 
 export default function TodoDashboard() {
+    const { user } = useAuth();
+    const [reload, setReload] = useState(false)
     const [todos, setTodos] = useState<Todo[]>([]);
     const [form, setForm] = useState({ title: "", description: "", date: "" });
     const [filter, setFilter] = useState("");
-    console.log("Todos:", todos);
+    console.log(todos)
     const addTodo = () => {
         if (!form.title || !form.date) return;
         const newTodo: Todo = {
             ...form,
             id: crypto.randomUUID(),
+            sort_order: todos.length,
         };
-        setTodos((prev) => [...prev, newTodo]);
+        apiRequest(`/todos/${user && user?.id}`, "POST", newTodo)
+            .then(data => {
+                if (data.status === 'success') {
+                    alert("Todo added successfully");
+                }
+                else {
+                    alert("Failed to add todo: " + data.error);
+                }
+            })
+            .catch(err => {
+                console.error("Error adding todo:", err);
+                alert("An error occurred while adding the todo.");
+            })
         setForm({ title: "", description: "", date: "" });
+        setReload(true)
     };
 
     const removeTodo = (id: string) => {
@@ -44,14 +63,37 @@ export default function TodoDashboard() {
         const { source, destination } = result;
         if (!destination) return;
 
-        // Reorder the actual todos, not filteredTodos
-        const reorderedTodos = Array.from(todos);
-        const [movedItem] = reorderedTodos.splice(source.index, 1);
-        reorderedTodos.splice(destination.index, 0, movedItem);
+        const reordered = Array.from(todos);
+        const [moved] = reordered.splice(source.index, 1);
+        reordered.splice(destination.index, 0, moved);
 
-        setTodos(reorderedTodos);
+        setTodos(reordered);
+
+        const payload = reordered.map((todo, index) => ({
+            id: todo.id,
+            sort_order: index,
+        }));
+
+        apiRequest(`/todos/${user?.id}/reorder`, "PUT", payload)
+            .then(res => {
+                if (res.status !== "success") {
+                    alert("Failed to save new order");
+                }
+            })
+            .catch(err => {
+                console.error("Error saving sort order:", err);
+            });
     };
 
+    useEffect(() => {
+        apiRequest(`/todos/${user && user?.id}`, "GET")
+            .then(data => {
+                console.log(data);
+                setTodos(data.todos || [])
+            })
+            .catch(err => { console.error("Error fetching todos:", err) })
+        setReload(false)
+    }, [user, reload])
     const overdue = todos.filter((t) => dayjs(t.date).isBefore(dayjs(), "day"));
     const upcoming = todos.filter((t) => dayjs(t.date).isAfter(dayjs(), "day"));
 

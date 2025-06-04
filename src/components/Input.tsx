@@ -15,7 +15,7 @@ const Input: React.FC<InputProps> = ({ label, name, ...props }) => (
       name={name}
       placeholder={`Enter your ${label.toLowerCase()}`}
       {...props}
-      className="w-full px-4 py-2 dark:bg-gray-800 bg-white border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      className="w-full px-4 py-2 dark:bg-gray-800 bg-white border border-gray-600 rounded-lg dark:text-gray-100 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
     />
   </div>
 );

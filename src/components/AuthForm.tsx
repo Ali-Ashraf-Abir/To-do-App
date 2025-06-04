@@ -7,6 +7,7 @@ import { Lock, User } from "lucide-react"; // ✅ Lucide icons
 import apiRequest from '../utilities/apiCalls'
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 interface AuthFormProps {
   type: "login" | "register";
 }
@@ -14,7 +15,7 @@ interface AuthFormProps {
 const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const [form, setForm] = useState({ email: "", password: "" });
   const router = useRouter();
-  const { token, setToken } = useAuth();
+  const { token, setToken,setUser } = useAuth();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -30,6 +31,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
         alert(`${type == 'login' ? 'login successful' : 'Registered Succesfully'}`)
         document.cookie = `token=${data.token}; path=/; max-age=86400; secure; samesite=strict`;
         setToken(data.token);
+        setUser(jwtDecode(data.token))
         router.push('/todo');
 
       } else {
