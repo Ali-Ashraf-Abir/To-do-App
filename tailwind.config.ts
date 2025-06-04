@@ -10,23 +10,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // 🌤️ Light mode (Cool & Soft) - keep as is or adjust as needed
-        bgPrimaryLight: "#E8F0F2",
-        bgSecondaryLight: "#D9E4DD",
-        textPrimaryLight: "#4A5C6A",
-        textSecondaryLight: "#7C8B94",
-        btnBgLight: "#6C9A8B",
-        btnBgHoverLight: "#4E7C6C",
-        cardBgLight: "#F9FAFB",
+        bgPrimaryLight: "var(--bg-primary-light)",
+        bgSecondaryLight: "var(--bg-secondary-light)",
+        textPrimaryLight: "var(--text-primary-light)",
+        textSecondaryLight: "var(--text-secondary-light)",
+        btnBgLight: "var(--btn-bg-light)",
+        btnBgHoverLight: "var(--btn-bg-hover-light)",
+        cardBgLight: "var(--card-bg-light)",
 
-        // 🌙 Dark mode (Retro palette you provided)
-        bgPrimaryDark: "#222831",
-        bgSecondaryDark: "#393E46",
-        textPrimaryDark: "#DFD0B8",
-        textSecondaryDark: "#948979",
-        btnBgDark: "#948979",
-        btnBgHoverDark: "#DFD0B8",
-        cardBgDark: "#393E46",
+        bgPrimaryDark: "var(--bg-primary-dark)",
+        bgSecondaryDark: "var(--bg-secondary-dark)",
+        textPrimaryDark: "var(--text-primary-dark)",
+        textSecondaryDark: "var(--text-secondary-dark)",
+        btnBgDark: "var(--btn-bg-dark)",
+        btnBgHoverDark: "var(--btn-bg-hover-dark)",
+        cardBgDark: "var(--card-bg-dark)",
       },
     },
   },

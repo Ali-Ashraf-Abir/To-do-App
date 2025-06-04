@@ -3,15 +3,25 @@
 @tailwind utilities;
 
 :root {
-  /* Retro Light Mode Colors */
-  --bg-primary: #f5deb3;        /* wheat */
-  --bg-secondary: #ffe4b5;      /* lighter yellow */
-  --text-primary: #1a1a1a;      /* dark text */
-  --text-secondary: #2c2c2c;    /* dark gray text */
-  --btn-bg: #588157;             /* olive green */
-  --btn-bg-hover: #3a5a40;       /* darker olive */
-  --card-bg: #fff8dc;            /* cream */
+  /* Light mode defaults */
+  --bg-primary-light: #E8F0F2;
+  --bg-secondary-light: #D9E4DD;
+  --text-primary-light: #4A5C6A;
+  --text-secondary-light: #7C8B94;
+  --btn-bg-light: #6C9A8B;
+  --btn-bg-hover-light: #4E7C6C;
+  --card-bg-light: #F9FAFB;
+
+  /* Dark mode defaults */
+  --bg-primary-dark: #222831;
+  --bg-secondary-dark: #393E46;
+  --text-primary-dark: #DFD0B8;
+  --text-secondary-dark: #948979;
+  --btn-bg-dark: #948979;
+  --btn-bg-hover-dark: #DFD0B8;
+  --card-bg-dark: #393E46;
 }
+
 
 .dark {
   /* Retro Dark Mode Colors */

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import Navbar from "@/components/shared/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeColorProvider } from "@/context/theme/ThemeColorContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -44,10 +45,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} transition-colors duration-300`}>
         <AuthProvider>
-          <ThemeProvider>
-            <Navbar />
-            {children}
-          </ThemeProvider>
+          <ThemeColorProvider>
+            <ThemeProvider>
+              <Navbar />
+              {children}
+            </ThemeProvider>
+          </ThemeColorProvider>
         </AuthProvider>
       </body>
     </html>
