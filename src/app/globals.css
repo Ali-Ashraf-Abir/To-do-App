@@ -11,6 +11,8 @@
   --btn-bg-light: #6C9A8B;
   --btn-bg-hover-light: #4E7C6C;
   --card-bg-light: #F9FAFB;
+  --success-light: #065f46;
+  --error-light: #991b1b;
 
   /* Dark mode defaults */
   --bg-primary-dark: #222831;
@@ -20,6 +22,8 @@
   --btn-bg-dark: #948979;
   --btn-bg-hover-dark: #DFD0B8;
   --card-bg-dark: #393E46;
+  --success-dark: #a7f3d0;
+  --error-dark: #fecaca;
 }
 
 

@@ -9,6 +9,8 @@ const COLOR_KEYS = [
   "btn-bg-light",
   "btn-bg-hover-light",
   "card-bg-light",
+  "success-light",
+  "error-light",
   "bg-primary-dark",
   "bg-secondary-dark",
   "text-primary-dark",
@@ -16,6 +18,8 @@ const COLOR_KEYS = [
   "btn-bg-dark",
   "btn-bg-hover-dark",
   "card-bg-dark",
+  "success-dark",
+  "error-dark",
 ];
 
 type Colors = Record<string, string | null>;

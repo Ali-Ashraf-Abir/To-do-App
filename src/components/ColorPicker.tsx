@@ -2,32 +2,40 @@
 import { useThemeColors } from "@/context/theme/ThemeColorContext";
 import { useEffect, useState } from "react";
 
-const COLOR_KEYS = [
-  "bg-primary-light",
-  "bg-secondary-light",
-  "text-primary-light",
-  "text-secondary-light",
-  "btn-bg-light",
-  "btn-bg-hover-light",
-  "card-bg-light",
-  "bg-primary-dark",
-  "bg-secondary-dark",
-  "text-primary-dark",
-  "text-secondary-dark",
-  "btn-bg-dark",
-  "btn-bg-hover-dark",
-  "card-bg-dark",
-];
+const LIGHT_KEYS: Record<string, string> = {
+  "bg-primary-light": "BG Primary",
+  "bg-secondary-light": "BG Secondary",
+  "text-primary-light": "Text Primary",
+  "text-secondary-light": "Text Secondary",
+  "btn-bg-light": "Btn BG",
+  "btn-bg-hover-light": "Btn Hover",
+  "card-bg-light": "Card BG",
+  "success-light": "Success",
+  "error-light": "Error",
+};
+
+const DARK_KEYS: Record<string, string> = {
+  "bg-primary-dark": "BG Primary",
+  "bg-secondary-dark": "BG Secondary",
+  "text-primary-dark": "Text Primary",
+  "text-secondary-dark": "Text Secondary",
+  "btn-bg-dark": "Btn BG",
+  "btn-bg-hover-dark": "Btn Hover",
+  "card-bg-dark": "Card BG",
+  "success-dark": "Success",
+  "error-dark": "Error",
+};
 
 function ColorSettings() {
   const [colors, setColors] = useThemeColors();
   const [defaultColors, setDefaultColors] = useState<Record<string, string>>({});
+  const [showLight, setShowLight] = useState(true);
+  const [showDark, setShowDark] = useState(true);
 
-  // Get default colors from :root
   useEffect(() => {
     const root = document.documentElement;
     const defaults: Record<string, string> = {};
-    COLOR_KEYS.forEach((key) => {
+    [...Object.keys(LIGHT_KEYS), ...Object.keys(DARK_KEYS)].forEach((key) => {
       const value = getComputedStyle(root).getPropertyValue(`--${key}`).trim();
       defaults[key] = value;
     });
@@ -43,45 +51,56 @@ function ColorSettings() {
 
   const handleRestoreDefaults = () => {
     const root = document.documentElement;
-
-    // Reset each CSS variable
-    COLOR_KEYS.forEach((key) => {
+    [...Object.keys(LIGHT_KEYS), ...Object.keys(DARK_KEYS)].forEach((key) => {
       if (defaultColors[key]) {
         root.style.setProperty(`--${key}`, defaultColors[key]);
       }
     });
-
-    // Clear user override
     localStorage.removeItem("user-theme-colors");
+    window.location.reload();
     setColors(null);
   };
 
+  const renderColorGroup = (keys: Record<string, string>, title: string, show: boolean, toggle: () => void) => (
+    <div>
+      <button
+        onClick={toggle}
+        className="text-sm font-semibold w-full text-left mb-2 mt-3 underline underline-offset-2"
+      >
+        {title}
+      </button>
+      {show && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          {Object.entries(keys).map(([key, label]) => (
+            <div key={key} className="flex items-center gap-2">
+              <label className="w-[6.5rem] truncate">{label}</label>
+              <input
+                type="color"
+                value={colors?.[key] || defaultColors[key] || "#ffffff"}
+                onChange={(e) => handleColorChange(key, e.target.value)}
+                className="w-9 h-5 border rounded"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div className="px-10 py-20">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-textPrimaryLight dark:text-textPrimaryDark">Theme Color Settings</h2>
+    <div className="space-y-4 text-sm text-textPrimaryLight dark:text-textPrimaryDark max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
+      <div className="flex justify-between items-center">
+        <h2 className="text-base font-semibold">Theme Colors</h2>
         <button
           onClick={handleRestoreDefaults}
-          className="bg-btnBgLight dark:bg-btnBgDark text-white px-4 py-2 rounded hover:bg-red-600"
+          className="text-xs px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded"
         >
-          Restore Defaults
+          Reset
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-textPrimaryLight dark:text-textPrimaryDark">
-        {COLOR_KEYS.map((key) => (
-          <div key={key} className="flex items-center gap-4">
-            <label className="w-48 capitalize">{key.replace(/-/g, " ")}</label>
-            <input
-              type="color"
-              value={
-                colors?.[key] || defaultColors[key] || "#ffffff"
-              }
-              onChange={(e) => handleColorChange(key, e.target.value)}
-              className="w-16 h-8 border rounded"
-            />
-          </div>
-        ))}
-      </div>
+
+      {renderColorGroup(LIGHT_KEYS, "🌞 Light Mode", showLight, () => setShowLight(!showLight))}
+      {renderColorGroup(DARK_KEYS, "🌙 Dark Mode", showDark, () => setShowDark(!showDark))}
     </div>
   );
 }

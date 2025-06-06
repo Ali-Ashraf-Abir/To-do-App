@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-// Hook for easy access
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

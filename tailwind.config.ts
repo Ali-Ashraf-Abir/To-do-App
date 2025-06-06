@@ -17,6 +17,8 @@ const config: Config = {
         btnBgLight: "var(--btn-bg-light)",
         btnBgHoverLight: "var(--btn-bg-hover-light)",
         cardBgLight: "var(--card-bg-light)",
+        successLight: "var(--success-light)",
+        errorLight: "var(--error-light)",
 
         bgPrimaryDark: "var(--bg-primary-dark)",
         bgSecondaryDark: "var(--bg-secondary-dark)",
@@ -25,6 +27,8 @@ const config: Config = {
         btnBgDark: "var(--btn-bg-dark)",
         btnBgHoverDark: "var(--btn-bg-hover-dark)",
         cardBgDark: "var(--card-bg-dark)",
+        successDark: "var(--success-dark)",
+        errorDark: "var(--error-dark)",
       },
     },
   },

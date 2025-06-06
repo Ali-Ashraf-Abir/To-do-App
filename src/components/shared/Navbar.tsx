@@ -48,7 +48,7 @@ export default function Navbar() {
   }
 
   return (
-  <nav className="flex items-center font-mono justify-between p-4 bg-bgPrimaryLight dark:bg-bgPrimaryDark shadow-md border-b border-bgPrimaryLight dark:shadow-gray-800 dark:border-gray-700 fixed top-0 left-0 right-0 z-50">
+  <nav className="flex items-center  justify-between p-4 bg-bgPrimaryLight dark:bg-bgPrimaryDark shadow-md border-b border-bgPrimaryLight dark:shadow-gray-800 dark:border-gray-700 fixed top-0 left-0 right-0 z-50">
     <Link href="/" className="text-xl font-bold text-textPrimaryLight dark:text-textPrimaryDark">
       ToDoApp
     </Link>

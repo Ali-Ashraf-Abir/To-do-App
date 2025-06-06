@@ -43,7 +43,7 @@ export default function PlannerBoard() {
   const [newNoteContent, setNewNoteContent] = useState("");
   const [activeColumn, setActiveColumn] = useState<string | null>(null);
 
-  // Add note to a column
+
   const addNote = (columnId: string) => {
     if (!newNoteContent.trim()) return;
     const newNote: Note = {
@@ -63,7 +63,7 @@ export default function PlannerBoard() {
     setActiveColumn(null);
   };
 
-  // Remove note
+
   const removeNote = (columnId: string, noteId: string) => {
     setColumns((prev) => {
       return {
@@ -76,25 +76,25 @@ export default function PlannerBoard() {
     });
   };
 
-  // Handle drag end (between columns or reorder in same column)
+
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
 
-    // If dropped in the same place, no change
+    
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
     )
       return;
 
-    // Copy source column notes
+
     const sourceCol = columns[source.droppableId];
     const destCol = columns[destination.droppableId];
     const sourceNotes = Array.from(sourceCol.notes);
     const destNotes = Array.from(destCol.notes);
 
-    // Moving inside same column
+
     if (source.droppableId === destination.droppableId) {
       const [movedNote] = sourceNotes.splice(source.index, 1);
       sourceNotes.splice(destination.index, 0, movedNote);
@@ -107,7 +107,7 @@ export default function PlannerBoard() {
         },
       }));
     } else {
-      // Moving to different column
+
       const [movedNote] = sourceNotes.splice(source.index, 1);
       destNotes.splice(destination.index, 0, movedNote);
 
@@ -130,7 +130,7 @@ export default function PlannerBoard() {
   console.log("Active column:", activeColumn);
 
 return (
-  <div className="min-h-screen p-6 font-mono bg-bgPrimaryLight text-textPrimaryLight dark:bg-bgPrimaryDark dark:text-textPrimaryDark">
+  <div className="min-h-screen p-6  bg-bgPrimaryLight text-textPrimaryLight dark:bg-bgPrimaryDark dark:text-textPrimaryDark">
     <h1 className="text-3xl font-bold mb-6 text-center">Planner Board</h1>
 
     <DragDropContext onDragEnd={onDragEnd}>
