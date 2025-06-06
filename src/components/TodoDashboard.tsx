@@ -199,15 +199,17 @@ export default function TodoDashboard() {
       </div>
 
       {/* Search */}
-      <div className="flex justify-between items-center mt-6">
-        <h3 className="text-lg font-semibold">Your Tasks</h3>
-        <input
-          type="text"
-          placeholder="Search title..."
-          className="p-2 rounded bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark border border-2 border-bgSecondaryLight dark:border-bgSecondaryDark"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
+      <div className="flex justify-between flex-col lg:flex-row gap-6 items-center mt-6">
+        <div className="flex justify-between gap-6 items-center">
+          <h3 className="text-lg font-semibold">Your Tasks</h3>
+          <input
+            type="text"
+            placeholder="Search title..."
+            className="p-2 rounded bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark border border-2 border-bgSecondaryLight dark:border-bgSecondaryDark"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
+        </div>
         <TodoCalendarDropdown
           todoDates={todoDates.map(d => d.date)}
           getTodoCount={(date) => {
