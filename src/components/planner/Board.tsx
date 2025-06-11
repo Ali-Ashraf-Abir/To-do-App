@@ -49,6 +49,7 @@ export default function Board({
                 <textarea
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
+                    placeholder="Add a new note..."
                     rows={2}
                     className="w-full p-2 border rounded mb-2 dark:bg-bgSecondaryDark"
                 />
@@ -59,7 +60,7 @@ export default function Board({
                             setNewNote("");
                         }
                     }}
-                    className="bg-btnBgPrimary dark:bg-btnBgDark text-white w-full py-1 rounded"
+                    className="bg-btnBgLight dark:bg-btnBgDark text-white w-full py-1 rounded"
                 >
                     Add Note
                 </button>

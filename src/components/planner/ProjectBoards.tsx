@@ -19,7 +19,7 @@ export default function ProjectBoards({
     const [newBoardName, setNewBoardName] = React.useState("");
 
     return (
-        <div className="flex-1 p-6 bg-bgPrimaryLight dark:bg-bgPrimaryDark">
+        <div className="flex-1 p-6 bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark">
             <h1 className="text-2xl font-bold mb-4 text-textPrimaryLight dark:text-textPrimaryDark">Boards</h1>
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex flex-wrap gap-4 ">
@@ -31,7 +31,7 @@ export default function ProjectBoards({
                             value={newBoardName}
                             onChange={(e) => setNewBoardName(e.target.value)}
                             placeholder="New board"
-                            className="p-2 border rounded mb-2 w-full"
+                            className="p-2 border rounded mb-2 w-full bg-bgSecondaryLight dark:bg-bgSecondaryDark text-textPrimaryLight dark:text-textPrimaryDark"
                         />
                         <button
                             onClick={() => {

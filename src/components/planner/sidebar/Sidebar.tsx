@@ -19,17 +19,17 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Mobile Toggle Button */}
+ 
       <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-btnBgLight dark:bg-btnBgDark text-white p-2 rounded"
+        className="md:hidden fixed top-3 left-4 z-50 bg-btnBgLight dark:bg-btnBgDark text-white p-2 rounded"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {/* Sidebar */}
+
       <aside
-        className={`fixed md:static top-0 left-0 h-screen w-64 bg-bgSecondaryLight dark:bg-bgSecondaryDark p-4 z-40 transform transition-transform duration-300 ease-in-out
+        className={`fixed md:static top-12 left-0 h-screen w-64 bg-bgSecondaryLight dark:bg-bgSecondaryDark p-4 z-40 transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         md:translate-x-0 md:block`}
       >
@@ -43,7 +43,7 @@ export default function Sidebar({
                 className="w-full bg-bgPrimaryLight dark:bg-bgPrimaryDark text-textPrimaryLight dark:text-textPrimaryDark p-2 rounded hover:bg-btnBgLight dark:hover:bg-btnBgDark transition-colors"
                 onClick={() => {
                   onSelectProject(project.id);
-                  setIsOpen(false); // close on mobile
+                  setIsOpen(false); 
                 }}
               >
                 {project.name}
@@ -64,7 +64,7 @@ export default function Sidebar({
               if (newProjectName.trim()) {
                 onAddProject(newProjectName.trim());
                 setNewProjectName("");
-                setIsOpen(false); // close on mobile
+                setIsOpen(false); 
               }
             }}
             className="w-full bg-btnBgLight dark:bg-btnBgDark text-white p-2 rounded hover:bg-btnBgHoverLight dark:hover:bg-btnBgHoverDark"

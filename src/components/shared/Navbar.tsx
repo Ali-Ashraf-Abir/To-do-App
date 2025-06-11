@@ -7,13 +7,14 @@ import getCookie from "@/utilities/getCookie";
 import apiRequest from "@/utilities/apiCalls";
 import { useAuth } from "@/context/AuthContext";
 import { jwtDecode } from "jwt-decode";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const { token, setToken, user, setUser,loggedIn } = useAuth();
-  const router= useRouter()
+  const { token, setToken, user, setUser, loggedIn } = useAuth();
+  const [gotSideMenu,setGotSideMenu]=useState(false)
+  const router = useRouter()
   useEffect(() => {
     const saved = localStorage.getItem("theme") as "light" | "dark";
     setTheme(saved ?? "light");
@@ -47,76 +48,45 @@ export default function Navbar() {
       )
   }
 
-  return (
-  <nav className="flex items-center  justify-between p-4 bg-bgPrimaryLight dark:bg-bgPrimaryDark shadow-md border-b border-bgPrimaryLight dark:shadow-gray-800 dark:border-gray-700 fixed top-0 left-0 right-0 z-50">
-    <Link href="/" className="text-xl font-bold text-textPrimaryLight dark:text-textPrimaryDark">
-      ToDoApp
-    </Link>
+  const pathname = usePathname();
 
-    <div className="hidden md:flex items-center space-x-6">
-      <Link href="/" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
-        Home
+  useEffect(() => { 
+    console.log(pathname)
+    if(pathname === '/planner'){
+      setGotSideMenu(true)
+    }
+    else{
+      setGotSideMenu(false)
+    }
+  }, [pathname])
+  return (
+    <nav className="flex items-center  justify-between p-4 bg-bgPrimaryLight dark:bg-bgPrimaryDark shadow-md border-b border-bgPrimaryLight dark:shadow-gray-800 dark:border-gray-700 fixed top-0 left-0 right-0 z-50">
+      <Link href="/" className={`text-xl font-bold text-textPrimaryLight dark:text-textPrimaryDark md:pl-0 ${gotSideMenu ? 'pl-10':'pl-0'}`}>
+        ToDoApp
       </Link>
 
-      {token && (
-        <div className="hidden md:flex items-center space-x-6">
-          <Link href="/todo" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
-            Todo
-          </Link>
-          <Link href="/planner" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
-            Planner
-          </Link>
-        </div>
-      )}
+      <div className="hidden md:flex items-center space-x-6">
+        <Link href="/" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
+          Home
+        </Link>
 
-      {!token && (
-        <div className="hidden md:flex items-center space-x-6">
-          <Link href="/login" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
-            Login
-          </Link>
-          <Link href="/register" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
-            Register
-          </Link>
-        </div>
-      )}
-
-      {token && (
-        <button onClick={handleLogout} className="py-2 text-textSecondaryLight dark:text-textSecondaryDark">
-          <LogOutIcon />
-        </button>
-      )}
-
-      <button onClick={toggleTheme} className="text-textSecondaryLight dark:text-textSecondaryDark">
-        {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-      </button>
-    </div>
-
-    <button
-      onClick={() => setMobileOpen(!mobileOpen)}
-      className="md:hidden text-textSecondaryLight dark:text-textSecondaryDark"
-    >
-      {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-    </button>
-
-    {mobileOpen && (
-      <div className="absolute top-16 left-0 right-0 flex flex-col items-center bg-bgPrimaryLight dark:bg-bgPrimaryDark py-4 shadow-md md:hidden z-10">
         {token && (
-          <div className="flex flex-col items-center">
-            <Link href="/todo" className="text-textSecondaryLight dark:text-textSecondaryDark py-2 hover:underline">
+          <div className="hidden md:flex items-center space-x-6">
+            <Link href="/todo" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
               Todo
             </Link>
-            <Link href="/planner" className="text-textSecondaryLight dark:text-textSecondaryDark py-2 hover:underline">
+            <Link href="/planner" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
               Planner
             </Link>
           </div>
         )}
 
         {!token && (
-          <div className="flex flex-col items-center">
-            <Link href="/login" className="text-textSecondaryLight dark:text-textSecondaryDark py-2 hover:underline">
+          <div className="hidden md:flex items-center space-x-6">
+            <Link href="/login" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
               Login
             </Link>
-            <Link href="/register" className="text-textSecondaryLight dark:text-textSecondaryDark py-2 hover:underline">
+            <Link href="/register" className="text-textSecondaryLight dark:text-textSecondaryDark hover:underline">
               Register
             </Link>
           </div>
@@ -124,15 +94,57 @@ export default function Navbar() {
 
         {token && (
           <button onClick={handleLogout} className="py-2 text-textSecondaryLight dark:text-textSecondaryDark">
-            Logout
+            <LogOutIcon />
           </button>
         )}
 
-        <button onClick={toggleTheme} className="py-2 text-textSecondaryLight dark:text-textSecondaryDark">
-          {theme === "dark" ? "Light Mode" : "Dark Mode"}
+        <button onClick={toggleTheme} className="text-textSecondaryLight dark:text-textSecondaryDark">
+          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
         </button>
       </div>
-    )}
-  </nav>
-);
+
+      <button
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className="md:hidden text-textSecondaryLight dark:text-textSecondaryDark"
+      >
+        {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {mobileOpen && (
+        <div className="absolute top-16 left-0 right-0 flex flex-col items-center bg-bgPrimaryLight dark:bg-bgPrimaryDark py-4 shadow-md md:hidden z-10">
+          {token && (
+            <div className="flex flex-col items-center">
+              <Link href="/todo" className="text-textSecondaryLight dark:text-textSecondaryDark py-2 hover:underline">
+                Todo
+              </Link>
+              <Link href="/planner" className="text-textSecondaryLight dark:text-textSecondaryDark py-2 hover:underline">
+                Planner
+              </Link>
+            </div>
+          )}
+
+          {!token && (
+            <div className="flex flex-col items-center">
+              <Link href="/login" className="text-textSecondaryLight dark:text-textSecondaryDark py-2 hover:underline">
+                Login
+              </Link>
+              <Link href="/register" className="text-textSecondaryLight dark:text-textSecondaryDark py-2 hover:underline">
+                Register
+              </Link>
+            </div>
+          )}
+
+          {token && (
+            <button onClick={handleLogout} className="py-2 text-textSecondaryLight dark:text-textSecondaryDark">
+              Logout
+            </button>
+          )}
+
+          <button onClick={toggleTheme} className="py-2 text-textSecondaryLight dark:text-textSecondaryDark">
+            {theme === "dark" ? "Light Mode" : "Dark Mode"}
+          </button>
+        </div>
+      )}
+    </nav>
+  );
 }
